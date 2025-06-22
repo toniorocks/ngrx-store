@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
+const productSelector = (state: any) => state.productReducer;
+const createProductSelector = (id:number, name:string) => ({ type: 'ADD_PRODUCT', payload: { id, name } });
+
+
 @Component({
   selector: 'app-root',
   imports: [FormsModule, CommonModule],
@@ -19,7 +23,7 @@ export class AppComponent implements OnInit {
   constructor(private store: Store<any>) {
     console.info('AppComponent constructor');
     this.counter$ = store.select('counterReducer');
-    this.products$ = this.store.select(state => state.productReducer);
+    this.products$ = this.store.select(productSelector);
     //console.info('counter$:', this.counter$);
   }
   ngOnInit(): void {
@@ -32,7 +36,7 @@ export class AppComponent implements OnInit {
 
   addProduct() {
     if (this.newProduct.trim()) {
-      this.store.dispatch({ type: 'ADD_PRODUCT', payload: { id:this.id++, name: this.newProduct } });
+      this.store.dispatch(createProductSelector(this.id++, this.newProduct.trim()));
       console.info('Product added:', this.store.select(state => state.productReducer), this.products$);
       this.newProduct = '';
     }
